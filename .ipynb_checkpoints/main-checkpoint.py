@@ -104,14 +104,14 @@ def infer_on_stream(args, client):
         input_validated = 0
         
         ###checks if input is an image file###
-    elif agrs.input.endswith('.jpg') or args.input.endswith(.bmp):
-        single_inpt_mode = True
+    elif args.input.endswith('.jpg') or args.input.endswith('.bmp'):
+        single_image_mode = True
         input_validated = args.input
         
          ###checks if input is an image file###
     else:
         input_validated = args.input
-        assert.os.path.isfile(args.input), "File Does not exist :( "
+        assert os.path.isfile(args.input), "File Does not exist :( "
         
     cap = cv2.VideoCapture(input_validated)
     cap.open(input_validated)
