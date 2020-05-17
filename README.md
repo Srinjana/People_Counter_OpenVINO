@@ -1,5 +1,7 @@
 # Deploy a People Counter App at the Edge
 
+\\ Refer to WRITEUP.md \\
+
 | Details            |              |
 |-----------------------|---------------|
 | Programming Language: |  Python 3.5 or 3.6 |
