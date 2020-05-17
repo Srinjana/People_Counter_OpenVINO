@@ -142,4 +142,9 @@ python main.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m home/workspace/faster
 ---
 #### Snapshots :- 
 
-...to be provided soon.
+Here are the Screenshots of the project run in http://0.0.0.0:3004  ...
+
+!["Imge missing"](images/1.png)
+
+
+!["Imge missing"](images/2.png)
