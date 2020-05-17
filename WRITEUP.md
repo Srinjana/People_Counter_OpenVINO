@@ -23,7 +23,7 @@ Computational needs are more efficiently met when using edge computing. Wherever
 
 ## Explaining Custom Layers
 
-The TensorFlow Object Detection Model Zoo (https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) contains many pre-trained models on the coco dataset. Ssd_inception_v2_coco and faster_rcnn_inception_v2_coco are the best fir for the project amidst the other datasets, but, in this project, faster_rcnn_inception_v2_coco is used which is fast in detecting people with less errors. 
+The TensorFlow Object Detection Model Zoo (https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) contains many pre-trained models on the coco dataset. Ssd_inception_v2_coco and faster_rcnn_inception_v2_coco are the best fit for the project amidst the other datasets, but, in this project, faster_rcnn_inception_v2_coco is used which is fast in detecting people from a feed with less errors. 
 Intel openVINO already contains extensions for custom layers used in TensorFlow Object Detection Model Zoo.
 
 The model is downloaded from the GitHub repository of Tensorflow Object Detection Model Zoo by the following command:
@@ -91,6 +91,14 @@ By testing it with different videos and analyzing the model performance on low l
 
 ---
 ### Running the Main Application
+
+Note: We will need to run ```npm install``` in the ```webservice/server``` and ```webservice/ui``` directories if we have not already.
+
+Then we convert th selected model to intermediate representation (IR) like so :
+
+```
+python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json
+```
 
 After converting the downloaded model to the OpenVINO IR, the three servers can be started on separate terminals, along with a terminal to run the output i.e. 
 
