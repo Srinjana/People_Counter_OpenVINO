@@ -9,8 +9,15 @@ The people counter application will demonstrate how to create a smart video IoT 
 
 ##### Differences in Edge and Cloud computing
 
-Edge Computing is regarded as ideal for operations with extreme latency concerns. Thus, medium scale companies that have budget limitations can use edge computing to save financial resources. 
-Cloud Computing is more suitable for projects and organizations which deal with massive data storage.
+Cloud Computing refers to the use of various services such as software development platforms, storage, servers, and other software through internet connectivity. Vendors for cloud computing have three common characteristics which are mentioned below:
+
+Services are scalable
+A user must pay the expenses of the services used, which can include memory, processing time, and bandwidth.
+Cloud vendors manage the back-end of the application.
+
+Edge Computing allows computing resources and application services to be distributed along the communication path, via decentralized computing infrastructure.
+
+Computational needs are more efficiently met when using edge computing. Wherever there is a requirement of collecting data or where a user performs a particular action, it can be completed in real-time. Typically, the two main benefits associated with edge computing are improved performance and reduced operational costs.
 
 ---
 
