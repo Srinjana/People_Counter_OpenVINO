@@ -1,59 +1,145 @@
+# Deploying a People Counter App at the Edge
+---
+---
 # Project Write-Up
 
-You can use this document as a template for providing your project write-up. However, if you
-have a different format you prefer, feel free to use it as long as you answer all required
-questions.
+The people counter application will demonstrate how to create a smart video IoT solution using Intel® hardware and software tools. The app will detect people in a designated area, providing the number of people in the frame, average duration of people in frame, and total count.
+
+---
+
+##### Differences in Edge and Cloud computing
+
+Edge Computing is regarded as ideal for operations with extreme latency concerns. Thus, medium scale companies that have budget limitations can use edge computing to save financial resources. 
+Cloud Computing is more suitable for projects and organizations which deal with massive data storage.
+
+---
 
 ## Explaining Custom Layers
 
-The process behind converting custom layers involves...
+The TensorFlow Object Detection Model Zoo (https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) contains many pre-trained models on the coco dataset. Ssd_inception_v2_coco and faster_rcnn_inception_v2_coco are the best fir for the project amidst the other datasets, but, in this project, faster_rcnn_inception_v2_coco is used which is fast in detecting people with less errors. 
+Intel openVINO already contains extensions for custom layers used in TensorFlow Object Detection Model Zoo.
 
-Some of the potential reasons for handling custom layers are...
+The model is downloaded from the GitHub repository of Tensorflow Object Detection Model Zoo by the following command:
+
+```
+wget http://download.tensorflow.org/models/object_detection/faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
+```
+Extracting the tar.gz file by the following command:
+
+```
+tar -xvf faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
+```
+Changing the directory to the extracted folder of the downloaded model:
+
+```
+cd faster_rcnn_inception_v2_coco_2018_01_28
+```
+The model can't be the existing models provided by Intel. So, converting the TensorFlow model to Intermediate Representation (IR) or OpenVINO IR format. The command used is given below:
+
+```
+python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model home/workspace/faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json
+```
+---
 
 ## Comparing Model Performance
+the two models taken into account were:
 
-My method(s) to compare models before and after conversion to Intermediate Representations
-were...
+Model-1: Ssd_inception_v2_coco_2018_01_28
 
-The difference between model accuracy pre- and post-conversion was...
+The model was converted to intermediate representation using the following command. This model lacked the accuracy needed as it failed to detect people correctly in the video.
+```
+python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model ssd_inception_v2_coco_2018_01_28/frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/ssd_v2_support.json
+```
 
-The size of the model pre- and post-conversion was...
+Model-2: Faster_rcnn_inception_v2_coco_2018_01_28
 
-The inference time of the model pre- and post-conversion was...
+The model was converted to intermediate representation using the following command. Model -2 i.e. Faster_rcnn_inception_v2_coco, performed better in the output video.
+```
+python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json
+```
+---
+## Model Research
+
+On comparison of the two models, namely ssd_inception_v2_coco and faster_rcnn_inception_v2_coco several insights were drawn in terms of latency and memory. It is evident that the Latency (microseconds) and Memory (Mb) decreases in case of OpenVINO as compared to plain Tensorflow model which is very useful in case of OpenVINO applications.
+
+| Model/Framework                             | Latency (microseconds)            | Memory (Mb) |
+| -----------------------------------         |:---------------------------------:| -------:|
+| ssd_inception_v2_coco (plain TF)            | 242                               | 539    |
+| ssd_inception_v2_coco (OpenVINO)            | 176                               | 340    |
+| faster_rcnn_inception_v2_coco (plain TF)    | 1471                              | 472    |
+| faster_rcnn_inception_v2_coco (OpenVINO)    | 874                               | 261    |
+
+---
 
 ## Assess Model Use Cases
 
-Some of the potential use cases of the people counter app are...
+This application could keep a check on the number of people in a particular area and could be helpful where there is restriction on the number of people present in a particular area. For Exmple it can avoid Overcrowding, ensure safe Vote casting during election and also help people maintain social distance during lockdown.
 
-Each of these use cases would be useful because...
-
+---
 ## Assess Effects on End User Needs
 
-Lighting, model accuracy, and camera focal length/image size have different effects on a
-deployed edge model. The potential effects of each of these are as follows...
+Lighting, model accuracy, and camera focal length/image size have different effects on efficiency of th model.
+by deploying an edge model, The potential effects of several factors are as follows...
+By testing it with different videos and analyzing the model performance on low light input videos could be an important factor in determining the best model for the given scenario.
 
-## Model Research
+---
+### Running the Main Application
 
-[This heading is only required if a suitable model was not found after trying out at least three
-different models. However, you may also use this heading to detail how you converted 
-a successful model.]
+After converting the downloaded model to the OpenVINO IR, the three servers can be started on separate terminals, along with a terminal to run the output i.e. 
 
-In investigating potential people counter models, I tried each of the following three models:
+-   MQTT Mosca server 
+-   Node.js* Web server
+-   FFmpeg server
 
-- Model 1: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
-  
-- Model 2: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
+---
+#### Setting up the environment
 
-- Model 3: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
+The environment in new terminals needs to be configured to use the Intel® Distribution of OpenVINO™ toolkit one time per session by running the following command:
+```
+source /opt/intel/openvino/bin/setupvars.sh -pyver 3.5
+```
+Next,
+
+#### Step 1 - Start the Mosca server
+
+```
+cd webservice/server/node-server
+node ./server.js
+```
+
+The following message is displayed, if successful:
+```
+Mosca server started.
+```
+
+#### Step 2 - Start the GUI
+
+Opening new terminal and executing below commands:
+```
+cd webservice/ui
+npm run dev
+```
+
+The following message is displayed, if successful:
+```
+webpack: Compiled successfully
+```
+
+#### Step 3 - FFmpeg Server
+
+Opening new terminal and executing below command:
+```
+sudo ffserver -f ./ffmpeg/server.conf
+```
+
+#### Step 4 - Run the code
+
+Opening new terminal and executing below command:
+```
+python main.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m home/workspace/faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.xml -l /opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_sse4.so -d CPU -pt 0.4 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
+```
+
+---
+#### Snapshots :- 
+
+...to be provided soon.
