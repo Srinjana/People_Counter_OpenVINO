@@ -106,5 +106,17 @@ def all_layers_supported(engine, network, console_output=False):
     for layer in layers:
         if layer not in layers_supported:
             all_supported = False
+        #added log changes as required to unsupported layers
+            not_supported_layer = \
+                [layer for layer in layers if layer not in layers_supported]
+            if len(not_supported_layer) != 0:
+                log.error ("Following layers are not supported by "
+                          "the plugin for specified device {}:\n {}".
+                          format(self.plugin.device,
+                                 ', '.join(not_supported_layer)))
+                log.error("Please specify CPU extensions library path"
+                          " in command line parameters using -l "
+                          "or --cpu_extension command line argument")
+                sys.exit(1)
 
     return all_supported
