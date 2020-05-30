@@ -89,6 +89,13 @@ Lighting, model accuracy, and camera focal length/image size have different effe
 by deploying an edge model, The potential effects of several factors are as follows...
 By testing it with different videos and analyzing the model performance on low light input videos could be an important factor in determining the best model for the given scenario.
 
+* In case of  poor lighting model's accuracy may fail considerably or even completely. However, this can be mitigated with good hardware that can process the images from poorly lit regions before passing it to the model.
+
+* Natural decrease in model accuracy during conversion or other stages can make the model unusable if the doesn't perform the required task. A effective solution to this would be to put the model into Validation Mode for some time. During this time the various devices could perform federated learning to give better performance. This might improve the performance.
+
+* Distorted input from camera due to change in focal length and/or image size will affect the model because the model may fail to make sense of the input and the distored input will not be detected properly by the model. An approach to solve this would be to use some augmnted images while training models and specifying the threshold skews, this could be a potential solution. However, the ranges would need to be selected accurately or it could lead to a decrease in accuracy.
+
+
 ---
 ### Running the Main Application
 
