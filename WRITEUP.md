@@ -57,6 +57,8 @@ Optimizer and the Inference Engine.
 
 The Model Optimizer first extracts information from the input model which includes the topology of the model layers along with parameters, input and output format, etc., for each layer. The model is then optimized from the various known characteristics of the layers, interconnects, and data flow which partly comes from the layer operation providing details including the shape of the output for each layer. Finally, the optimized model is output to the model IR files needed by the Inference Engine to run the model.
 
+![](images/3.png)
+
 There are majorly two custom layer extensions required-
 
 1. Custom Layer Extractor
@@ -68,6 +70,8 @@ Responsible for identifying the custom layer operation and extracting the parame
 Responsible for specifying the attributes that are supported by the custom layer and computing the output shape for each instance of the custom layer from its parameters. The `--mo-op` command-line argument shown in the examples below generates a custom layer operation for the Model Optimizer.
 
 #### Inference Engine
+
+![](images/4.png)
 
 Each device plugin in the Inference Engine includes a library of optimized implementations to execute known layer operations which must be extended to execute a custom layer. The custom layer extension is implemented according to the target device:
 
