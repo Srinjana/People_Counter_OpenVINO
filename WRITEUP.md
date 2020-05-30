@@ -7,7 +7,7 @@ The people counter application will demonstrate how to create a smart video IoT 
 
 ---
 
-##### Differences in Edge and Cloud computing
+# Differences in Edge and Cloud Computing
 
 Cloud Computing refers to the use of various services such as software development platforms, storage, servers, and other software through internet connectivity. Vendors for cloud computing have three common characteristics which are mentioned below:
 
@@ -46,6 +46,68 @@ The model can't be the existing models provided by Intel. So, converting the Ten
 ```
 python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model home/workspace/faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json
 ```
+
+### Custom Layers implementation
+
+When implementing a custom layer for our pre-trained model in the
+Open Vino toolkit, we will need to add extensions to both the Model 
+Optimizer and the Inference Engine.
+
+#### Model Optimizer
+
+The Model Optimizer first extracts information from the input model which includes the topology of the model layers along with parameters, input and output format, etc., for each layer. The model is then optimized from the various known characteristics of the layers, interconnects, and data flow which partly comes from the layer operation providing details including the shape of the output for each layer. Finally, the optimized model is output to the model IR files needed by the Inference Engine to run the model.
+
+There are majorly two custom layer extensions required-
+
+1. Custom Layer Extractor
+
+Responsible for identifying the custom layer operation and extracting the parameters for each instance of the custom layer. The layer parameters are stored per instance and used by the layer operation before finally appearing in the output IR. Typically the input layer parameters are unchanged, which is the case covered by this tutorial.
+
+2. Custom Layer Operation
+
+Responsible for specifying the attributes that are supported by the custom layer and computing the output shape for each instance of the custom layer from its parameters. The `--mo-op` command-line argument shown in the examples below generates a custom layer operation for the Model Optimizer.
+
+#### Inference Engine
+
+Each device plugin in the Inference Engine includes a library of optimized implementations to execute known layer operations which must be extended to execute a custom layer. The custom layer extension is implemented according to the target device:
+
+1. Custom Layer CPU Extension
+
+A compiled shared library (`.so` or `.dll` binary) needed by the CPU Plugin for executing the custom layer on the CPU.
+
+2. Custom Layer GPU Extension
+
+OpenCL source code (`.cl`) for the custom layer kernel that will be compiled to execute on the GPU along with a layer description file (`.xml`) needed by the GPU Plugin for the custom layer kernel.
+
+The Model Extension Generator tool generates template source code files for each of the extensions needed by the Model Optimizer and the Inference Engine.
+
+The script for this is available here-  `/opt/intel/openvino/deployment_tools/tools/extension_generator/extgen.py`
+
+You could use this script in the following manner:
+
+```
+usage: We can use any combination of the following arguments:
+
+Arguments to configure extension generation in the interactive mode:
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --mo-caffe-ext        generate a Model Optimizer Caffe* extractor
+  --mo-mxnet-ext        generate a Model Optimizer MXNet* extractor
+  --mo-tf-ext           generate a Model Optimizer TensorFlow* extractor
+  --mo-op               generate a Model Optimizer operation
+  --ie-cpu-ext          generate an Inference Engine CPU extension
+  --ie-gpu-ext          generate an Inference Engine GPU extension
+  --output_dir OUTPUT_DIR
+                        set an output directory. If not specified, the current
+                        directory is used by default.
+```
+### Reasons to handle Custom Layers
+
+While working on an Industrial scale it becomes very important to develop custom layers which are tailored to the functionality of the project it works on.
+Another common use case would be when using `lambda` layers. These layers are where one could add an arbitary peice of code to a model implementation.
+
+
 ---
 
 ## Comparing Model Performance
