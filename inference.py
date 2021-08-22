@@ -91,7 +91,7 @@ class Network:
     def get_output(self):
         ### TODO: Extract and return the output results
         ### Note: You may need to update the function parameters. ###
-        ou = self.infer_request_handle.outputs[self.output_blob]
+        out = self.infer_request_handle.outputs[self.output_blob]
         return out
 
     
